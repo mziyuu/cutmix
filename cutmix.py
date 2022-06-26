@@ -1,6 +1,7 @@
 import os
 import PIL
 from PIL import Image
+import cv2
 import random
 from tqdm import tqdm
 
@@ -55,9 +56,9 @@ def generate_paste_location(background_size, target_size):
 def cutmix(old_label, background, patch):
     image = Image.open(os.path.join(patch_dir, patch))
     background_image = Image.open(os.path.join(background_dir, background))
-    if image.size[0] * 2 > background_image.size[0] or image.size[1] * 2 > background_image.size[1]:
+    while image.size[0] * 2 > background_image.size[0] or image.size[1] * 2 > background_image.size[1]:
+        image = image.resize((int(image.size[0]*0.5), int(image.size[1]*0.5)))
         # pass if patch size * 2 > background size
-        return 0
     new_image = background_image.copy()
     paste_location = generate_paste_location(background_image.size, image.size)
     generate_new_label(old_label, background_image.size, image.size, paste_location)
